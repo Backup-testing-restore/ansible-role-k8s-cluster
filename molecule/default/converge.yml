@@ -1,13 +1,32 @@
 ---
 - name: Converge
-  hosts: all
+  hosts:
+    - control-plane
+    - workers
   remote_user: mishavint
   become: yes
+#   vars:
+#     k8s_cluster_services_network_cidr: 172.18.0.0/16
+#     k8s_cluster_pod_network:
+#       # Flannel CNI.
+#       cni: 'flannel'
+#       cidr: '172.16.0.0/16'
   roles:
     - { role: ansible-role-docker }
     - { role: disable_swap }
     - { role: ansible-role-containerd }
   tasks:
+    # I love fish so much
+    - name: Install fish shell
+      ansible.builtin.apt:
+        name: fish
+        state: latest
+
+    - name: Configure fish as default shell
+      ansible.builtin.user:
+        name: "{{ ansible_facts['env']['USER'] }}"
+        shell: /bin/fish
+
     - name: "Include mishavint.ansible_k8s_cluster"
       include_role:
         name: "mishavint.ansible_k8s_cluster"

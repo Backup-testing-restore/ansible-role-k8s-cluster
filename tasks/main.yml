@@ -3,4 +3,8 @@
 
 - include_tasks: install-k8s-components.yml
 
-- include_tasks: initialize-k8s-cluster.yml
+- include_tasks: control-plane-init.yml
+  when: "'control-plane' in group_names"
+
+- include_tasks: workers-init.yml
+  when: "'workers' in group_names"
